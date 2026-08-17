@@ -1,0 +1,246 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* Tailwind's automatic source detection stops at this app's own directory, so
+   utility classes that appear ONLY inside the shared component library would
+   never be generated. Every package whose source uses Tailwind classes has to
+   be listed here. */
+@source "../../../../libs/shared/ui/src";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   Design tokens
+   --------------------------------------------------------------------------
+   A school operating system is used all day: dense where it must be
+   (gradebook, attendance, class lists), calm everywhere else. So the canvas
+   is a near-white with a faint cool cast rather than pure white, the accent
+   is a single deep teal spent only on primary actions and active state, and
+   semantic colours stay entirely separate from the accent so "this needs
+   attention" never reads as "this is a button".
+
+   All values are OKLCH for perceptually even ramps across light and dark.
+   ========================================================================== */
+
+:root {
+  /* Surfaces */
+  --canvas: oklch(0.984 0.003 240);
+  --surface: oklch(1 0 0);
+  --surface-sunken: oklch(0.966 0.004 240);
+  --surface-raised: oklch(1 0 0);
+  --overlay: oklch(0.22 0.012 250 / 0.4);
+
+  /* Text */
+  --fg: oklch(0.22 0.014 250);
+  --fg-muted: oklch(0.505 0.013 250);
+  --fg-subtle: oklch(0.63 0.011 250);
+  /* Foreground for filled accent/semantic surfaces. Each is paired with its own
+     background - reusing --fg-on-accent on a danger button tints the label with
+     the primary hue, which reads as a different component rather than a red one. */
+  --fg-on-accent: oklch(0.99 0 0);
+  --fg-on-danger: oklch(0.99 0 0);
+  --fg-on-success: oklch(0.99 0 0);
+
+  /* Lines */
+  --border: oklch(0.917 0.006 245);
+  --border-strong: oklch(0.855 0.009 245);
+  --ring: oklch(0.53 0.104 192);
+
+  /* Accent - spent only on primary action and active state */
+  --primary: oklch(0.53 0.104 192);
+  --primary-hover: oklch(0.475 0.1 192);
+  --primary-soft: oklch(0.955 0.028 192);
+  --primary-soft-fg: oklch(0.4 0.09 192);
+
+  /* Semantic - deliberately not the accent hue */
+  --success: oklch(0.56 0.126 152);
+  --success-soft: oklch(0.958 0.032 152);
+  --warning: oklch(0.68 0.135 72);
+  --warning-soft: oklch(0.963 0.045 82);
+  --danger: oklch(0.545 0.19 25);
+  --danger-soft: oklch(0.962 0.03 25);
+  --info: oklch(0.55 0.115 245);
+  --info-soft: oklch(0.958 0.028 245);
+
+  /* Data visualisation - ordered for categorical series */
+  --chart-1: oklch(0.53 0.104 192);
+  --chart-2: oklch(0.6 0.13 255);
+  --chart-3: oklch(0.66 0.13 85);
+  --chart-4: oklch(0.58 0.15 330);
+  --chart-5: oklch(0.6 0.12 145);
+  --chart-6: oklch(0.55 0.09 30);
+
+  /* Shape - modest, not pill-shaped everywhere */
+  --radius-control: 0.375rem;
+  --radius-card: 0.625rem;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px oklch(0.22 0.014 250 / 0.05);
+  --shadow-raised:
+    0 1px 3px oklch(0.22 0.014 250 / 0.08), 0 8px 24px -12px oklch(0.22 0.014 250 / 0.18);
+  --shadow-overlay:
+    0 2px 8px oklch(0.22 0.014 250 / 0.1), 0 16px 48px -16px oklch(0.22 0.014 250 / 0.28);
+}
+
+.dark {
+  /* Lifted off true black: the canvas needs enough lightness that a card sitting
+     on it separates by surface alone, without leaning on the border to do the work. */
+  --canvas: oklch(0.205 0.009 252);
+  --surface: oklch(0.253 0.011 252);
+  --surface-sunken: oklch(0.178 0.008 252);
+  --surface-raised: oklch(0.292 0.012 252);
+  --overlay: oklch(0.12 0.008 252 / 0.6);
+
+  --fg: oklch(0.955 0.004 250);
+  --fg-muted: oklch(0.71 0.011 250);
+  --fg-subtle: oklch(0.585 0.012 250);
+  --fg-on-accent: oklch(0.16 0.02 192);
+  --fg-on-danger: oklch(0.17 0.03 25);
+  --fg-on-success: oklch(0.16 0.03 152);
+
+  --border: oklch(0.302 0.012 252);
+  --border-strong: oklch(0.38 0.014 252);
+  --ring: oklch(0.72 0.11 190);
+
+  --primary: oklch(0.72 0.11 190);
+  --primary-hover: oklch(0.78 0.105 190);
+  --primary-soft: oklch(0.3 0.045 192);
+  --primary-soft-fg: oklch(0.83 0.09 190);
+
+  --success: oklch(0.72 0.13 152);
+  --success-soft: oklch(0.29 0.05 152);
+  --warning: oklch(0.79 0.13 78);
+  --warning-soft: oklch(0.31 0.05 78);
+  --danger: oklch(0.68 0.16 25);
+  --danger-soft: oklch(0.31 0.07 25);
+  --info: oklch(0.7 0.11 245);
+  --info-soft: oklch(0.29 0.05 245);
+
+  --chart-1: oklch(0.72 0.11 190);
+  --chart-2: oklch(0.7 0.12 255);
+  --chart-3: oklch(0.78 0.12 85);
+  --chart-4: oklch(0.7 0.14 330);
+  --chart-5: oklch(0.72 0.11 145);
+  --chart-6: oklch(0.7 0.09 30);
+
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.3);
+  --shadow-raised: 0 1px 3px oklch(0 0 0 / 0.4), 0 8px 24px -12px oklch(0 0 0 / 0.6);
+  --shadow-overlay: 0 2px 8px oklch(0 0 0 / 0.45), 0 16px 48px -16px oklch(0 0 0 / 0.7);
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
+  --color-overlay: var(--overlay);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-on-accent: var(--fg-on-accent);
+  --color-fg-on-danger: var(--fg-on-danger);
+  --color-fg-on-success: var(--fg-on-success);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-fg: var(--primary-soft-fg);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+  --shadow-overlay: var(--shadow-overlay);
+
+  /* Control heights. Grids use compact; everything else uses default. */
+  --spacing-control: 2rem;
+  --spacing-control-compact: 1.75rem;
+  --spacing-control-lg: 2.25rem;
+}
+
+@layer base {
+  /* NOTE: these reference the raw tokens (--border, --canvas, …) and NOT the
+     --color-* aliases. Those aliases live in `@theme inline`, which inlines
+     values into generated utilities without ever defining the custom property,
+     so `var(--color-border)` resolves to nothing in hand-written CSS. */
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    background-color: var(--canvas);
+    /* Tailwind preflight sets html's font from --default-font-family; override
+       it at the source so the whole document inherits Geist, not the fallback. */
+    --default-font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    --default-mono-font-family: var(--font-geist-mono), ui-monospace, Consolas, monospace;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--fg);
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: normal;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Digits line up in every table, ledger and gradebook without extra classes. */
+  table,
+  [data-tabular] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: var(--primary-soft);
+    color: var(--primary-soft-fg);
+  }
+
+  /* Scrollbars: present but quiet. Dense screens have a lot of them. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+}
+
+@layer utilities {
+  /* Every layout uses logical properties so RTL is a locale switch, not a rewrite. */
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}

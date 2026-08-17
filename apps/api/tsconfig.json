@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    // "node" (classic/"node10") resolution is what makes decorators +
+    // reflect-metadata work reliably when this is run directly through tsx
+    // in dev, and what makes `tsc -p` emit plain CommonJS `dist/main.js`
+    // that `node dist/main.js` can run (this package has no "type": "module",
+    // unlike @sms/kernel and @sms/db). TS 6 deprecates the name in favour of
+    // "node10" without changing behaviour; NodeNext was evaluated instead
+    // but rejected because it would require this CommonJS package to
+    // `require()` @sms/kernel/@sms/db, which are ESM-only source packages -
+    // classic resolution sidesteps that entirely since it only looks at
+    // "main", never "type" or "exports".
+    "ignoreDeprecations": "6.0",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["node"]
+  },
+  "include": ["src"]
+}

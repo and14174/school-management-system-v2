@@ -1,0 +1,34 @@
+{
+  "name": "@sms/db",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Postgres connection, tenant-scoped transactions (SET LOCAL / RLS) and the migration runner.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "nx": {
+    "tags": ["type:shared"]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "migrate": "tsx src/migrate.ts"
+  },
+  "dependencies": {
+    "@sms/kernel": "workspace:*",
+    "postgres": "^3.4.9",
+    "drizzle-orm": "^0.45.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "^12.1.0",
+    "testcontainers": "^12.1.0"
+  }
+}

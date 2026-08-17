@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "types": ["node"],
+    // Set explicitly (duplicating tsconfig.base.json), not just inherited via
+    // `extends` - see libs/platform/access/tsconfig.json's own comment for
+    // why this is load-bearing under tsx's watch-mode symlink resolution.
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,20 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "types": ["node"],
+    // Set explicitly (duplicating tsconfig.base.json), not just inherited via
+    // `extends`: apps/api's `tsx watch` resolves this package through a
+    // node_modules symlink/junction (`@sms/access` -> this directory), and
+    // tsx's tsconfig loader was observed to resolve `extends` relative to
+    // that link rather than this file's real path, silently losing every
+    // base option - including this one - and rejecting this package's
+    // constructor-parameter decorators (`@Inject(...)`) at transform time.
+    // Redundant when this file is loaded directly (e.g. `tsc`, this
+    // package's own `vitest`), load-bearing when loaded through the link.
+    // See `libs/platform/identity/tsconfig.json` for the original note.
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  },
+  "include": ["src"]
+}

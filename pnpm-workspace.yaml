@@ -1,0 +1,23 @@
+nodeLinker: hoisted
+
+packages:
+  - 'apps/*'
+  - 'libs/**'
+
+# Native/postinstall builds we explicitly trust. Anything not listed stays blocked.
+allowBuilds:
+  esbuild: true
+  nx: true
+  protobufjs: true
+  '@swc/core': true
+  '@parcel/watcher': true
+  unrs-resolver: true
+  # Optional native accelerators and telemetry - safe to skip, pure-JS fallbacks exist.
+  cpu-features: false
+  ssh2: false
+  msgpackr-extract: false
+  '@scarf/scarf': false
+  # Optional adapters @better-auth/cli can target. We use neither - the CLI is a
+  # dev-only tool for generating the auth schema, which we then hand-review.
+  '@prisma/client': false
+  better-sqlite3: false

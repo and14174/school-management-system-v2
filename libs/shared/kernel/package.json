@@ -1,0 +1,27 @@
+{
+  "name": "@sms/kernel",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pure TypeScript vocabulary shared by every module - branded ids, Result, domain errors, temporal helpers, tenant context.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "nx": {
+    "tags": ["type:shared"]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.4.3",
+    "date-fns": "^4.4.0"
+  }
+}

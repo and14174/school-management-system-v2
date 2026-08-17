@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>School Management System — Phase 1 Architecture Plan</title>
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; }
+  img { max-width: 100%; height: auto; }
+
+  :root {
+    --ground:      #F6F8F6;
+    --surface:     #FFFFFF;
+    --surface-2:   #EFF3F0;
+    --ink:         #131E1A;
+    --ink-2:       #3B4A44;
+    --muted:       #63736C;
+    --rule:        #D9E1DC;
+    --rule-strong: #BCC9C2;
+    --accent:      #0D6A4E;
+    --accent-ink:  #08543E;
+    --accent-wash: #E2EFE8;
+    --amber:       #A2700F;
+    --amber-wash:  #F5EBD7;
+    --slate:       #4F657E;
+    --slate-wash:  #E4EAF1;
+    --alert:       #A32A20;
+    --alert-wash:  #F7E5E3;
+    --shadow:      0 1px 2px rgba(19,30,26,.05), 0 8px 24px -12px rgba(19,30,26,.14);
+
+    --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    --sans: system-ui, "Segoe UI Variable Text", "Segoe UI", -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "Cascadia Code", "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+
+    --measure: 70ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0D1512;
+      --surface:     #141E19;
+      --surface-2:   #1A2621;
+      --ink:         #E7EEEA;
+      --ink-2:       #C0CDC7;
+      --muted:       #8DA098;
+      --rule:        #26342D;
+      --rule-strong: #384942;
+      --accent:      #52C293;
+      --accent-ink:  #7CD4AE;
+      --accent-wash: #14312690;
+      --amber:       #DFAE4E;
+      --amber-wash:  #33280F90;
+      --slate:       #94ADC9;
+      --slate-wash:  #1C283490;
+      --alert:       #EE8B80;
+      --alert-wash:  #35191690;
+      --shadow:      0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #0D1512;
+    --surface:     #141E19;
+    --surface-2:   #1A2621;
+    --ink:         #E7EEEA;
+    --ink-2:       #C0CDC7;
+    --muted:       #8DA098;
+    --rule:        #26342D;
+    --rule-strong: #384942;
+    --accent:      #52C293;
+    --accent-ink:  #7CD4AE;
+    --accent-wash: #14312690;
+    --amber:       #DFAE4E;
+    --amber-wash:  #33280F90;
+    --slate:       #94ADC9;
+    --slate-wash:  #1C283490;
+    --alert:       #EE8B80;
+    --alert-wash:  #35191690;
+    --shadow:      0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 28px 96px;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding: 56px 0 30px;
+    margin-bottom: 44px;
+    display: grid;
+    gap: 18px;
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    align-items: center;
+  }
+  .eyebrow .sep { color: var(--rule-strong); }
+  h1 {
+    font-family: var(--sans);
+    font-weight: 660;
+    font-size: clamp(30px, 4.6vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -.024em;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .standfirst {
+    max-width: var(--measure);
+    color: var(--ink-2);
+    font-size: 19px;
+    margin: 0;
+  }
+
+  /* ---------- layout ---------- */
+  .cols { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media (min-width: 1000px) {
+    .cols { grid-template-columns: 200px minmax(0, 1fr); gap: 56px; align-items: start; }
+    nav.toc { position: sticky; top: 24px; }
+  }
+
+  nav.toc {
+    display: grid;
+    gap: 2px;
+    align-content: start;
+    margin-bottom: 40px;
+    font-family: var(--sans);
+    font-size: 13.5px;
+  }
+  nav.toc .toc-head {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+  }
+  nav.toc a {
+    color: var(--ink-2);
+    text-decoration: none;
+    padding: 5px 0 5px 12px;
+    border-left: 2px solid var(--rule);
+    display: block;
+  }
+  nav.toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+  nav.toc a .num { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-right: 7px; }
+
+  article { display: grid; gap: 60px; min-width: 0; }
+  section { display: grid; gap: 18px; min-width: 0; scroll-margin-top: 20px; }
+
+  h2 {
+    font-family: var(--sans);
+    font-weight: 640;
+    font-size: clamp(21px, 2.4vw, 27px);
+    letter-spacing: -.018em;
+    line-height: 1.2;
+    margin: 0;
+    text-wrap: balance;
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  h2 .num {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0;
+    flex: none;
+  }
+  h3 {
+    font-family: var(--sans);
+    font-weight: 620;
+    font-size: 16.5px;
+    letter-spacing: -.008em;
+    margin: 14px 0 0;
+    color: var(--ink);
+  }
+  h4 {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 11.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+  }
+  p { margin: 0; max-width: var(--measure); }
+  a { color: var(--accent-ink); }
+  strong { font-weight: 600; color: var(--ink); }
+  em { font-style: italic; }
+
+  ul, ol { margin: 0; padding-left: 22px; max-width: var(--measure); display: grid; gap: 7px; }
+  li::marker { color: var(--rule-strong); }
+  ol li::marker { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+
+  code {
+    font-family: var(--mono);
+    font-size: .855em;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: .1em .34em;
+    color: var(--ink);
+  }
+  pre {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.62;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin: 0;
+    overflow-x: auto;
+    color: var(--ink-2);
+    box-shadow: var(--shadow);
+  }
+  pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  pre .c { color: var(--muted); }
+  pre .k { color: var(--accent); }
+
+  /* ---------- tables ---------- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; font-family: var(--sans); font-size: 14px; }
+  th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.pick { font-weight: 600; color: var(--ink); white-space: nowrap; }
+  td.pick .ver { display: block; font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--muted); letter-spacing: .01em; }
+  td.alt { color: var(--muted); }
+
+  /* ---------- chips ---------- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .chip.p1 { background: var(--accent-wash); color: var(--accent-ink); border-color: var(--accent); }
+  .chip.p2 { background: var(--amber-wash); color: var(--amber); border-color: var(--amber); }
+  .chip.p3 { background: var(--slate-wash); color: var(--slate); border-color: var(--slate); }
+  .chip.have { background: var(--accent-wash); color: var(--accent-ink); border-color: var(--accent); }
+  .chip.need { background: var(--alert-wash); color: var(--alert); border-color: var(--alert); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-family: var(--sans); font-size: 13px; color: var(--muted); }
+
+  /* ---------- module map ---------- */
+  .layer { display: grid; gap: 12px; }
+  .layer-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .layer-label::after { content: ""; height: 1px; background: var(--rule); flex: 1; }
+  .modgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 10px; }
+  .mod {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    box-shadow: var(--shadow);
+  }
+  .mod .name {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -.01em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .mod .desc { font-family: var(--sans); font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+  .mod.dim { opacity: .72; }
+
+  /* ---------- flow ---------- */
+  .flow { display: grid; gap: 8px; }
+  .flow-row {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 14px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow);
+  }
+  .flow-row .step {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    padding-top: 2px;
+  }
+  .flow-row .what { font-family: var(--sans); font-size: 14px; }
+  .flow-row .what b { font-weight: 640; }
+  .flow-row .what span { color: var(--muted); display: block; font-size: 13px; margin-top: 2px; }
+
+  /* ---------- callout ---------- */
+  .note {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    display: grid;
+    gap: 7px;
+    max-width: var(--measure);
+  }
+  .note.warn { border-left-color: var(--alert); }
+  .note .h {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+  .note.warn .h { color: var(--alert); }
+  .note p { font-size: 15px; }
+
+  /* ---------- milestones ---------- */
+  .miles { display: grid; gap: 0; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--surface); box-shadow: var(--shadow); }
+  .mile { display: grid; grid-template-columns: 62px 1fr; gap: 16px; padding: 14px 18px; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .mile:last-child { border-bottom: 0; }
+  .mile .id { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: .02em; }
+  .mile .body { display: grid; gap: 4px; }
+  .mile .title { font-family: var(--sans); font-size: 14.5px; font-weight: 620; }
+  .mile .detail { font-family: var(--sans); font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+
+  hr.rule { border: 0; border-top: 1px solid var(--rule); margin: 0; }
+
+  .footer {
+    margin-top: 72px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--muted);
+    max-width: var(--measure);
+    display: grid;
+    gap: 8px;
+  }
+  .footer a { color: var(--muted); }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">
+      <span>Architecture Plan</span><span class="sep">/</span>
+      <span>Phase 1 — Essential SIS Foundation</span><span class="sep">/</span>
+      <span>8 August 2026</span>
+    </div>
+    <h1>School Management System: how to build Phase&nbsp;1 as a modular platform</h1>
+    <p class="standfirst">A stack, a module map, the handful of data-model decisions that are expensive to reverse, a delivery sequence, and everything you need installed to run it on this machine.</p>
+  </header>
+
+  <div class="cols">
+
+    <nav class="toc">
+      <div class="toc-head">Contents</div>
+      <a href="#shape"><span class="num">01</span>The shape</a>
+      <a href="#stack"><span class="num">02</span>Stack decisions</a>
+      <a href="#modules"><span class="num">03</span>Module map</a>
+      <a href="#hard"><span class="num">04</span>Hard-to-reverse calls</a>
+      <a href="#tenancy"><span class="num">05</span>Tenancy &amp; access</a>
+      <a href="#comms"><span class="num">06</span>Module comms</a>
+      <a href="#repo"><span class="num">07</span>Repo layout</a>
+      <a href="#plan"><span class="num">08</span>Delivery sequence</a>
+      <a href="#local"><span class="num">09</span>Running locally</a>
+      <a href="#not"><span class="num">10</span>What not to build</a>
+      <a href="#execute"><span class="num">11</span>Executing the six</a>
+      <a href="#closed"><span class="num">12</span>Decisions, closed</a>
+    </nav>
+
+    <article>
+
+      <!-- ============ 1 ============ -->
+      <section id="shape">
+        <h2><span class="num">01</span>The shape of the thing</h2>
+        <p>Build a <strong>modular monolith</strong>: one deployable backend, one database, but internally split into modules with hard boundaries — separate Postgres schemas, no cross-module table reads, and a published contract for every module that another module is allowed to call.</p>
+        <p>This is the right call for Phase 1 because the domain boundaries are still moving. Microservices would force you to guess where attendance ends and gradebook begins before you have a customer, and would make the cross-cutting requirements in the brief — audit logs, tenant isolation, the automation engine, year rollover — dramatically harder. The boundaries you enforce in code are the same ones you'd extract along later if a module genuinely needs its own scaling profile (report generation and messaging are the likely first candidates).</p>
+        <div class="note">
+          <div class="h">The one-sentence version</div>
+          <p>Nx monorepo → NestJS backend on Fastify, one module per bounded context, each owning its own Postgres schema → Postgres 18 with row-level security as the tenant backstop → Next.js 16 front end where the four portals are route groups over one shared component library.</p>
+        </div>
+      </section>
+
+      <!-- ============ 2 ============ -->
+      <section id="stack">
+        <h2><span class="num">02</span>Stack decisions</h2>
+        <p>Versions are the current published releases as of today. Pin them; don't float.</p>
+        <div class="tablewrap">
+          <table>
+            <thead>
+              <tr><th>Layer</th><th>Choice</th><th>Why this one</th><th>Alternative</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Runtime</td>
+                <td class="pick">Node.js 24 LTS<span class="ver">v24.16.0</span></td>
+                <td>Already on the machine. Native TS type-stripping, stable fetch, good Windows story.</td>
+                <td class="alt">Bun — faster, thinner ecosystem for Nest/Playwright</td>
+              </tr>
+              <tr>
+                <td>Monorepo</td>
+                <td class="pick">Nx<span class="ver">23.1.1</span></td>
+                <td>Tag-based lint rules are what actually stop module boundaries eroding. Affected-graph builds keep CI cheap.</td>
+                <td class="alt">Turborepo + pnpm workspaces — simpler, no boundary enforcement</td>
+              </tr>
+              <tr>
+                <td>Backend</td>
+                <td class="pick">NestJS + Fastify<span class="ver">11.1.28</span></td>
+                <td>Its module/provider model <em>is</em> the modular monolith. DI makes cross-module contracts injectable and mockable. Fastify adapter for throughput.</td>
+                <td class="alt">Hono or plain Fastify — faster to start, no structure at 40 modules</td>
+              </tr>
+              <tr>
+                <td>Database</td>
+                <td class="pick">PostgreSQL 18<span class="ver">18.4</span></td>
+                <td>RLS for tenant isolation, JSONB for custom fields, tsvector search, temporal FK constraints, <code>uuidv7()</code> for sortable keys.</td>
+                <td class="alt">None worth considering for this domain</td>
+              </tr>
+              <tr>
+                <td>Data access</td>
+                <td class="pick">Drizzle ORM<span class="ver">0.45.2</span></td>
+                <td>You need explicit control: <code>SET LOCAL</code> per transaction for RLS, hand-tuned reporting SQL, migrations you can read. Schema-per-module in TypeScript.</td>
+                <td class="alt">Prisma 7 — nicer DX, more friction around RLS session context</td>
+              </tr>
+              <tr>
+                <td>Auth (identity)</td>
+                <td class="pick">Better Auth<span class="ver">1.6.26</span></td>
+                <td>TypeScript-native, self-hosted in your own Postgres. Organization, MFA, SSO/OIDC and session-policy plugins cover the MVP security list.</td>
+                <td class="alt">Keycloak — pick it if a district requires on-prem IdP</td>
+              </tr>
+              <tr>
+                <td>Authorization</td>
+                <td class="pick">CASL<span class="ver">7.0.1</span></td>
+                <td>Handles what schools actually need: field-level rules (medical, counselling notes) and scoped rules ("own sections", "own campus"). Rules are data, so roles stay configurable per tenant.</td>
+                <td class="alt">OpenFGA / Cerbos — better at scale, another service to run</td>
+              </tr>
+              <tr>
+                <td>Front end</td>
+                <td class="pick">Next.js 16 + React 19<span class="ver">16.3.0 / 19.2.8</span></td>
+                <td>App Router route groups give you four portals over one auth session and one component library. Server components keep the parent portal light on poor connections.</td>
+                <td class="alt">Vite + TanStack Router — leaner, you rebuild SSR and routing yourself</td>
+              </tr>
+              <tr>
+                <td>UI</td>
+                <td class="pick">Tailwind v4 + shadcn/ui<span class="ver">4.3.3</span></td>
+                <td>Own the component source — you will need a dense gradebook grid and an attendance grid that no component library ships. Logical properties give RTL nearly free.</td>
+                <td class="alt">Mantine / MUI — faster start, harder to make dense</td>
+              </tr>
+              <tr>
+                <td>Data fetching</td>
+                <td class="pick">TanStack Query + Table<span class="ver">5.101.4</span></td>
+                <td>Offline mutation queue for attendance sync; virtualised tables for 2,000-row class lists.</td>
+                <td class="alt">RSC + server actions only — no offline story</td>
+              </tr>
+              <tr>
+                <td>API contract</td>
+                <td class="pick">REST + OpenAPI 3.1</td>
+                <td>The brief requires a versioned public REST API. Generate it from Nest decorators, then generate the typed front-end client from it — one contract, not two.</td>
+                <td class="alt">tRPC — great internally, useless as a public API</td>
+              </tr>
+              <tr>
+                <td>Validation</td>
+                <td class="pick">Zod<span class="ver">4.4.3</span></td>
+                <td>One schema per DTO shared by API validation, forms, CSV import rules, and custom-field definitions.</td>
+                <td class="alt">TypeBox — faster, less ergonomic for dynamic schemas</td>
+              </tr>
+              <tr>
+                <td>Jobs &amp; scheduling</td>
+                <td class="pick">BullMQ + Redis<span class="ver">6.0.9</span></td>
+                <td>Notification fan-out, report-card generation, CSV imports, scheduled report delivery, absence-streak scans. Repeatable jobs cover the nightly work.</td>
+                <td class="alt">pg-boss — skip Redis entirely if you want one fewer service</td>
+              </tr>
+              <tr>
+                <td>Files</td>
+                <td class="pick">S3 API (MinIO locally)</td>
+                <td>Student photos, enrolment documents, medical files, generated PDFs. Presigned URLs so files never proxy through the API.</td>
+                <td class="alt">Postgres large objects — don't</td>
+              </tr>
+              <tr>
+                <td>Documents / PDF</td>
+                <td class="pick">React templates → Playwright</td>
+                <td>Report cards, transcripts, ID cards, timetables, invoices, admit cards all become HTML templates a school can restyle, printed headlessly in a worker.</td>
+                <td class="alt">Typst or LaTeX — better typography, no template editor story</td>
+              </tr>
+              <tr>
+                <td>Messaging out</td>
+                <td class="pick">Adapter per channel</td>
+                <td>Email (Resend/Postmark), SMS (Twilio or a local gateway), WhatsApp Cloud API, Web Push. One <code>NotificationChannel</code> interface, providers swappable per tenant and per country.</td>
+                <td class="alt">Single provider — blocks international sales</td>
+              </tr>
+              <tr>
+                <td>Observability</td>
+                <td class="pick">OpenTelemetry + Pino + Sentry</td>
+                <td>Trace IDs carry tenant and user; structured logs redact PII by field name, not by hope.</td>
+                <td class="alt">Vendor SDK only — lock-in on the one thing you'll change</td>
+              </tr>
+              <tr>
+                <td>Testing</td>
+                <td class="pick">Vitest + Testcontainers + Playwright</td>
+                <td>RLS policies and grade calculations must be tested against a real Postgres, not a mock. Testcontainers spins one per suite.</td>
+                <td class="alt">Jest + sqlite — will not exercise RLS at all</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ 3 ============ -->
+      <section id="modules">
+        <h2><span class="num">03</span>Module map</h2>
+        <p>Two layers. <strong>Platform modules</strong> know nothing about schools — they're the substrate every domain module leans on. <strong>Domain modules</strong> own school concepts and may depend on platform modules and on other domain modules' published contracts, never their tables.</p>
+        <div class="legend">
+          <span class="chip p1">Phase 1</span> build now
+          <span class="chip p2">Phase 2</span> stub the contract, build later
+          <span class="chip p3">Phase 3</span> not in scope
+        </div>
+
+        <div class="layer">
+          <div class="layer-label">Platform layer</div>
+          <div class="modgrid">
+            <div class="mod"><div class="name">tenancy <span class="chip p1">P1</span></div><div class="desc">Schools, campuses, subscription plan, feature flags, branding, terminology overrides, tenant context resolution.</div></div>
+            <div class="mod"><div class="name">identity <span class="chip p1">P1</span></div><div class="desc">Accounts, sessions, MFA, SSO, password &amp; session policy, impersonation with its own audit trail.</div></div>
+            <div class="mod"><div class="name">access <span class="chip p1">P1</span></div><div class="desc">Roles, permissions, scopes, field-level masks. Compiles a CASL ability per request; issues the RLS session context.</div></div>
+            <div class="mod"><div class="name">audit <span class="chip p1">P1</span></div><div class="desc">Append-only event log, data-access history, change history per record, retention rules.</div></div>
+            <div class="mod"><div class="name">notifications <span class="chip p1">P1</span></div><div class="desc">Templates, channel adapters, per-person preferences and consent, scheduling, delivery status, translation hooks.</div></div>
+            <div class="mod"><div class="name">files <span class="chip p1">P1</span></div><div class="desc">Upload, virus scan hook, presigned access, per-file permission checks, retention.</div></div>
+            <div class="mod"><div class="name">documents <span class="chip p1">P1</span></div><div class="desc">Template registry and PDF rendering for report cards, transcripts, certificates, ID cards, invoices.</div></div>
+            <div class="mod"><div class="name">custom-fields <span class="chip p1">P1</span></div><div class="desc">Per-tenant field definitions on any record, Zod schema compiled at runtime, JSONB storage.</div></div>
+            <div class="mod"><div class="name">import-export <span class="chip p1">P1</span></div><div class="desc">CSV mapping UI, dry-run preview, validation, duplicate detection, import history, reversible bulk ops.</div></div>
+            <div class="mod"><div class="name">reporting <span class="chip p1">P1</span></div><div class="desc">Saved filters, dashboard queries against read models, CSV/XLSX/PDF export, scheduled delivery.</div></div>
+            <div class="mod"><div class="name">integration <span class="chip p1">P1</span></div><div class="desc">API keys with scopes, webhook subscriptions, delivery log with retry, OneRoster surface later.</div></div>
+            <div class="mod"><div class="name">workflow <span class="chip p1">P1</span></div><div class="desc">Form builder, conditional fields, approval routing, status tracking, reusable templates. Your differentiator.</div></div>
+            <div class="mod"><div class="name">automation <span class="chip p2">P2</span></div><div class="desc">When-this-then-that rules over the domain event stream. Ships after the outbox has real traffic.</div></div>
+          </div>
+        </div>
+
+        <div class="layer" style="margin-top:26px">
+          <div class="layer-label">Domain layer</div>
+          <div class="modgrid">
+            <div class="mod"><div class="name">academic-structure <span class="chip p1">P1</span></div><div class="desc">Years, terms, grading periods, grade levels, cohorts, departments, subjects, courses, sections, rooms, bell schedules, calendars, holidays.</div></div>
+            <div class="mod"><div class="name">people <span class="chip p1">P1</span></div><div class="desc">The Person aggregate and its roles, households, relationships, emergency and pickup contacts, custody flags, photos, critical alerts, merge.</div></div>
+            <div class="mod"><div class="name">enrollment <span class="chip p1">P1</span></div><div class="desc">Enrol, transfer, withdraw, graduate, promote, re-enrol, status history, bulk updates, year rollover, certificates, ID cards.</div></div>
+            <div class="mod"><div class="name">scheduling <span class="chip p1">P1</span></div><div class="desc">Manual timetabling, teacher and room assignment, recurring patterns, conflict detection, capacity validation, substitutes, workload.</div></div>
+            <div class="mod"><div class="name">attendance <span class="chip p1">P1</span></div><div class="desc">Daily and period marking, configurable codes, bulk entry, leave requests, parent notices, streak alerts, corrections with approval.</div></div>
+            <div class="mod"><div class="name">gradebook <span class="chip p1">P1</span></div><div class="desc">Categories and weights, assignments, rubrics, points / letter / standards grading, calculation rules, approval and locking, comments.</div></div>
+            <div class="mod"><div class="name">academic-records <span class="chip p1">P1</span></div><div class="desc">Report cards, progress reports, transcripts, GPA and rank, credits, historical grade import, promotion eligibility, publication.</div></div>
+            <div class="mod"><div class="name">communications <span class="chip p1">P1</span></div><div class="desc">Announcements, class and group messages, teacher–parent threads — every message linked to a student, class, invoice or incident.</div></div>
+            <div class="mod"><div class="name">billing <span class="chip p1">P1</span></div><div class="desc">Fee types, plans, invoices, payments, receipts, balances, gateway adapter. A subledger — not a general ledger.</div></div>
+            <div class="mod"><div class="name">admissions <span class="chip p1">P1</span></div><div class="desc">Inquiry capture, application form, pipeline stages, checklists, decision, applicant→student conversion. Basic only.</div></div>
+            <div class="mod dim"><div class="name">health <span class="chip p2">P2</span></div><div class="desc">Conditions, allergies, immunisations, clinic visits, restricted counselling notes.</div></div>
+            <div class="mod dim"><div class="name">behavior <span class="chip p2">P2</span></div><div class="desc">Incidents, codes, consequences, follow-up, confidential notes.</div></div>
+            <div class="mod dim"><div class="name">assessments <span class="chip p2">P2</span></div><div class="desc">Exam periods, marks entry, moderation, seating, admit cards, publication.</div></div>
+            <div class="mod dim"><div class="name">activities <span class="chip p2">P2</span></div><div class="desc">Clubs, teams, rosters, eligibility, permissions, awards.</div></div>
+            <div class="mod dim"><div class="name">operations, hr, finance, sen, alumni <span class="chip p3">P3</span></div><div class="desc">Library, transport, cafeteria, hostel, HR/payroll, general ledger, IEPs, advancement.</div></div>
+          </div>
+        </div>
+
+        <h3>The boundary rules that make this work</h3>
+        <ul>
+          <li>Every module owns a Postgres schema (<code>people</code>, <code>attendance</code>, <code>gradebook</code>…). Its DB role has no grants on other modules' tables — the boundary is enforced by the database, not by discipline.</li>
+          <li>A module exports one <code>*.contract.ts</code> — an interface plus its event types. Nx tag rules fail the build on any import that reaches past it.</li>
+          <li>Reads across modules go through the contract; writes across modules go through events. No module writes another's tables, ever.</li>
+          <li>Reference IDs cross boundaries, not entities. <code>attendance</code> stores a <code>person_id</code>; it does not store a copy of the student's name.</li>
+          <li>Dashboards and reports read from <strong>read models</strong> — materialised views or projection tables owned by <code>reporting</code> — so a principal's dashboard doesn't fan out into nine modules per page load.</li>
+        </ul>
+      </section>
+
+      <!-- ============ 4 ============ -->
+      <section id="hard">
+        <h2><span class="num">04</span>The six calls that are expensive to reverse</h2>
+        <p>Almost everything else can be refactored later. These six get baked into every table and every query, so decide them before writing the first migration.</p>
+
+        <h3>1 — One person, one record</h3>
+        <p>A single <code>people.person</code> row per human, with role assignments layered on top. A parent who teaches at the school and has two children enrolled is one person with three roles, not three records.</p>
+<pre><code><span class="c">-- schema: people</span>
+person(id, tenant_id, given_name, family_name, dob, photo_file_id, custom_fields jsonb, …)
+person_role(person_id, role, campus_id, valid_from, valid_to)   <span class="c">-- student|guardian|staff|alumni</span>
+household(id, tenant_id, name, primary_address_id)
+household_member(household_id, person_id, relationship, is_primary_contact)
+relationship(from_person_id, to_person_id, type, has_custody, may_pickup, may_receive_comms)
+</code></pre>
+        <p>Duplicate detection runs on normalised name + DOB + contact trigrams (<code>pg_trgm</code>) at create time and as a batch job; merges are recorded so they can be undone.</p>
+
+        <h3>2 — Everything is effective-dated</h3>
+        <p>The single most common failure in school systems: last year's report card changes because a student moved class this year. Enrolments, section memberships, staff assignments, fee plans and role assignments all carry <code>valid_from</code> / <code>valid_to</code>, and every academic fact is stamped with the <code>academic_year_id</code> it belongs to. Use Postgres 18 temporal <code>PRIMARY KEY</code> / <code>FOREIGN KEY</code> constraints to stop overlapping periods at the database level. Historical records are immutable; corrections create a new version and an audit entry.</p>
+
+        <h3>3 — Ambient context on every request</h3>
+        <p>Tenant, campus and academic year are resolved once per request and never passed as query parameters a client could tamper with. They live in an AsyncLocalStorage context, are asserted by a Nest interceptor, and are pushed into the DB session so RLS can see them.</p>
+
+        <h3>4 — Custom fields as JSONB, never EAV</h3>
+        <p>A <code>field_definition</code> registry per tenant per record type drives a Zod schema built at runtime; values live in a <code>custom_fields jsonb</code> column with a GIN index. Entity–attribute–value tables will make every report unwritable by month six.</p>
+
+        <h3>5 — Rules are configuration rows, not code branches</h3>
+        <p>Attendance rules, grade scales, calculation rules, promotion criteria and report-card templates are versioned config rows scoped to tenant + academic year. When a school changes its grading scale mid-year, last year's grades must still resolve against the old scale — which only works if the scale is a row the grade points at.</p>
+
+        <h3>6 — Every mutation is auditable and bulk operations are reversible</h3>
+        <p>A generic trigger writes before/after row images to <code>audit.record_history</code>. Every bulk import or bulk edit creates a <code>bulk_operation</code> row that groups its changes so it can be rolled back as a unit. This is one of the brief's stated differentiators and it is nearly free if you build it first, nearly impossible to retrofit.</p>
+
+        <div class="note warn">
+          <div class="h">Retrofit cost</div>
+          <p>Adding effective dating or the audit trigger after twenty modules exist means rewriting every query and backfilling history that was never recorded. Build both in the first milestone, before the first domain module. Section&nbsp;11 covers how to execute each of the six and how to stop them eroding.</p>
+        </div>
+      </section>
+
+      <!-- ============ 5 ============ -->
+      <section id="tenancy">
+        <h2><span class="num">05</span>Tenancy, permissions and the request path</h2>
+        <p>Shared schema with a <code>tenant_id</code> on every tenant-scoped table, application-level filtering as the first line of defence, and Postgres RLS as the backstop that holds even when application code has a bug. The app connects as a role <em>without</em> <code>BYPASSRLS</code>; migrations run as a separate owner role.</p>
+
+        <div class="flow">
+          <div class="flow-row"><div class="step">01</div><div class="what"><b>Request arrives</b><span>Session cookie or API key → Better Auth resolves the account.</span></div></div>
+          <div class="flow-row"><div class="step">02</div><div class="what"><b>Context resolved</b><span>tenancy module derives tenant, campus and current academic year; stored in AsyncLocalStorage.</span></div></div>
+          <div class="flow-row"><div class="step">03</div><div class="what"><b>Ability compiled</b><span>access module builds a CASL ability from role + scope rows, including field-level masks for medical and counselling data.</span></div></div>
+          <div class="flow-row"><div class="step">04</div><div class="what"><b>Transaction opens</b><span><code>SET LOCAL app.tenant_id / app.person_id / app.campus_id</code> — this is what RLS policies read.</span></div></div>
+          <div class="flow-row"><div class="step">05</div><div class="what"><b>Handler runs</b><span>Guards check the ability; the module service does its work; domain events are appended to the outbox in the same transaction.</span></div></div>
+          <div class="flow-row"><div class="step">06</div><div class="what"><b>Response serialised</b><span>An interceptor strips fields the ability forbids — the API never returns a field the caller cannot see.</span></div></div>
+          <div class="flow-row"><div class="step">07</div><div class="what"><b>Trail written</b><span>audit records who read or changed what, with trace ID, IP and impersonation chain.</span></div></div>
+        </div>
+
+        <h3>Permission model</h3>
+        <p>A permission is <em>action</em> × <em>resource</em> × <em>scope</em> × <em>fields</em>. Scope is the piece most systems get wrong: a teacher reads attendance for <em>their own sections</em>, a head of year for <em>their grade level</em>, a nurse reads medical for <em>all students</em> but no grades at all. Model scope explicitly as <code>own | section | grade_level | campus | tenant</code> and let tenants compose roles from it.</p>
+      </section>
+
+      <!-- ============ 6 ============ -->
+      <section id="comms">
+        <h2><span class="num">06</span>How modules talk — the outbox</h2>
+        <p>Synchronous calls go through injected contract interfaces. Anything that fans out — notifications, read-model updates, webhooks, automation rules — goes through a transactional outbox, which is the single most valuable piece of plumbing in the system.</p>
+<pre><code><span class="c">-- one transaction</span>
+<span class="k">INSERT INTO</span> attendance.record (…);
+<span class="k">INSERT INTO</span> platform.outbox (topic, payload, tenant_id)
+     <span class="k">VALUES</span> ('attendance.marked_absent', '{"person_id":…,"date":…}', …);
+<span class="k">COMMIT</span>;
+
+<span class="c">-- a worker drains the outbox and dispatches to:</span>
+<span class="c">--   notifications  → "unexplained absence" message to guardians</span>
+<span class="c">--   reporting      → attendance read-model projection</span>
+<span class="c">--   integration    → registered webhook subscribers, with retry</span>
+<span class="c">--   automation     → "5 absences this month → alert counsellor" rule (Phase 2)</span>
+</code></pre>
+        <p>Because the event is written in the same transaction as the fact, you never notify a parent about an absence that got rolled back — and you never silently lose a notification because Redis was down. The automation engine in Phase 2 and the webhook platform become consumers of a stream that already exists, rather than new infrastructure.</p>
+      </section>
+
+      <!-- ============ 7 ============ -->
+      <section id="repo">
+        <h2><span class="num">07</span>Repository layout</h2>
+<pre><code>sms/
+├─ apps/
+│  ├─ api/                    <span class="c">NestJS — composes every module, one deployable</span>
+│  ├─ worker/                 <span class="c">BullMQ processors + outbox dispatcher</span>
+│  └─ web/                    <span class="c">Next.js 16</span>
+│     └─ app/
+│        ├─ (admin)/          <span class="c">route group per portal, shared session</span>
+│        ├─ (teacher)/
+│        ├─ (parent)/
+│        ├─ (student)/
+│        └─ (apply)/          <span class="c">public admissions applicant portal</span>
+├─ libs/
+│  ├─ platform/               <span class="c">tenancy, identity, access, audit, files, …</span>
+│  │  └─ access/
+│  │     ├─ src/contract.ts   <span class="c">← the only file other modules may import</span>
+│  │     ├─ src/api/          <span class="c">controllers, DTOs</span>
+│  │     ├─ src/application/  <span class="c">services, use cases</span>
+│  │     ├─ src/domain/       <span class="c">entities, policies, events</span>
+│  │     └─ src/infra/        <span class="c">drizzle schema, repositories, migrations</span>
+│  ├─ domain/
+│  │  ├─ people/  enrollment/  attendance/  gradebook/  …
+│  ├─ shared/
+│  │  ├─ kernel/              <span class="c">ids, result types, temporal helpers, errors</span>
+│  │  ├─ db/                  <span class="c">connection, RLS session helper, tx utilities</span>
+│  │  └─ ui/                  <span class="c">design system, grids, form renderer</span>
+│  └─ contracts/              <span class="c">generated OpenAPI client + shared Zod schemas</span>
+├─ infra/
+│  ├─ docker-compose.yml
+│  └─ migrations/             <span class="c">ordered per schema, RLS policies included</span>
+└─ nx.json                    <span class="c">tag rules: domain→platform ok, platform→domain never</span>
+</code></pre>
+        <p>Each module folder is a <code>libs/</code> package with an Nx tag. The dependency rules are one config block: <code>type:domain</code> may depend on <code>type:platform</code> and on <code>scope:contract</code> of other domains; <code>type:platform</code> may never depend on <code>type:domain</code>. That rule is what keeps the monolith modular after eighteen months.</p>
+      </section>
+
+      <!-- ============ 8 ============ -->
+      <section id="plan">
+        <h2><span class="num">08</span>Delivery sequence</h2>
+        <p>Ordered by dependency, not by demo value. M0–M2 produce almost nothing a customer can see and are the reason the rest goes fast.</p>
+        <div class="miles">
+          <div class="mile"><div class="id">M0</div><div class="body"><div class="title">Foundation</div><div class="detail">Nx workspace, Nest+Fastify skeleton, Next app shell, Docker Compose, CI, Testcontainers harness, OpenAPI generation, design tokens.</div></div></div>
+          <div class="mile"><div class="id">M1</div><div class="body"><div class="title">Tenancy, identity, access, audit</div><div class="detail">Tenant/campus model, Better Auth wired, role &amp; permission model, CASL ability compilation, RLS policy conventions, audit triggers, the effective-dating helpers. Nothing else starts until this is done.</div></div></div>
+          <div class="mile"><div class="id">M2</div><div class="body"><div class="title">Academic structure + people</div><div class="detail">Years, terms, grade levels, subjects, courses, sections, rooms, calendars. Person aggregate, households, relationships, contacts, custom fields, duplicate detection and merge.</div></div></div>
+          <div class="mile"><div class="id">M3</div><div class="body"><div class="title">Enrollment + CSV import</div><div class="detail">Full lifecycle, status history, bulk operations with rollback, year rollover and promotion, the mapping-and-preview import experience. Ship import early — it is how every pilot school gets their data in.</div></div></div>
+          <div class="mile"><div class="id">M4</div><div class="body"><div class="title">Scheduling + attendance</div><div class="detail">Manual timetabling with conflict and capacity checks, substitutes. Daily and period attendance, configurable codes, offline-capable teacher marking, corrections with approval.</div></div></div>
+          <div class="mile"><div class="id">M5</div><div class="body"><div class="title">Gradebook + academic records</div><div class="detail">Categories, assignments, rubrics, traditional and standards-based scales, calculation and locking, then report cards, transcripts, GPA and the document renderer.</div></div></div>
+          <div class="mile"><div class="id">M6</div><div class="body"><div class="title">Portals + communications</div><div class="detail">Four role dashboards over the read models, one guardian account spanning all children, announcements and threaded messaging, notification preferences and delivery status.</div></div></div>
+          <div class="mile"><div class="id">M7</div><div class="body"><div class="title">Billing + basic admissions</div><div class="detail">Fee plans, invoices, balances, receipts, one payment gateway. Inquiry → application → decision → convert to student.</div></div></div>
+          <div class="mile"><div class="id">M8</div><div class="body"><div class="title">Workflow engine, API, hardening</div><div class="detail">Form builder with approval routing, public REST API keys and webhooks, scheduled reports, i18n and RTL pass, backup/restore drill, penetration test, load test on a 3,000-student dataset.</div></div></div>
+        </div>
+        <div class="note">
+          <div class="h">Sequencing note</div>
+          <p>Seed a realistic fixture school — 1,200 students, 90 staff, 300 sections, a full year of attendance and grades — at M2 and keep it current. Every subsequent milestone gets tested against data of a believable shape, and demos stop being a separate task.</p>
+        </div>
+      </section>
+
+      <!-- ============ 9 ============ -->
+      <section id="local">
+        <h2><span class="num">09</span>Running it locally</h2>
+        <p>Checked against this machine — three of the four host prerequisites are already in place.</p>
+
+        <h3>Install on the host</h3>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Tool</th><th>Status</th><th>How</th></tr></thead>
+            <tbody>
+              <tr><td class="pick">Node.js 24 LTS</td><td><span class="chip have">Have · v24.16.0</span></td><td class="alt">Already installed</td></tr>
+              <tr><td class="pick">Git</td><td><span class="chip have">Have · 2.54.0</span></td><td class="alt">Already installed</td></tr>
+              <tr><td class="pick">Docker Desktop</td><td><span class="chip have">Have · 29.6.1</span></td><td class="alt">Confirm the WSL2 backend is enabled in Settings → General</td></tr>
+              <tr><td class="pick">pnpm 10</td><td><span class="chip need">Need</span></td><td><code>corepack enable pnpm</code> — ships with Node, no separate download</td></tr>
+              <tr><td class="pick">Playwright Chromium</td><td><span class="chip need">Need</span></td><td><code>pnpm exec playwright install chromium</code> — required for PDF rendering and E2E</td></tr>
+              <tr><td class="pick">VS Code extensions</td><td><span class="chip need">Need</span></td><td class="alt">ESLint, Prettier, Tailwind CSS IntelliSense, Docker, Nx Console</td></tr>
+              <tr><td class="pick">A Postgres client</td><td><span class="chip need">Optional</span></td><td class="alt">DBeaver, TablePlus or pgAdmin — you can also use <code>docker compose exec db psql</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Nothing else is installed natively. No Postgres, no Redis, no MinIO on the host — they run in containers so every developer and CI get byte-identical versions.</p>
+
+        <h3>Services in Docker Compose</h3>
+<pre><code><span class="c"># infra/docker-compose.yml — the local dependency set</span>
+db       postgres:18-alpine   <span class="c">→ localhost:5432   main database</span>
+redis    redis:8-alpine       <span class="c">→ localhost:6379   BullMQ queues, rate limits, cache</span>
+minio    minio/minio          <span class="c">→ :9000 API, :9001 console   S3-compatible file storage</span>
+mailpit  axllent/mailpit      <span class="c">→ :1025 SMTP, :8025 web   catches every outbound email</span>
+</code></pre>
+        <p>Postgres needs two roles in its init script: an <code>sms_owner</code> that runs migrations and owns the schemas, and an <code>sms_app</code> that the API connects as — no <code>BYPASSRLS</code>, no table ownership. Without that split, RLS silently does nothing, because owners bypass it.</p>
+
+        <h3>First run</h3>
+<pre><code>git clone &lt;repo&gt; sms &amp;&amp; cd sms
+corepack enable pnpm
+pnpm install
+cp .env.example .env                 <span class="c"># nothing secret needed for local</span>
+docker compose -f infra/docker-compose.yml up -d
+pnpm db:migrate                      <span class="c"># schemas, RLS policies, audit triggers</span>
+pnpm db:seed                          <span class="c"># the 1,200-student fixture school</span>
+pnpm dev                              <span class="c"># api :3333 · web :3000 · worker</span></code></pre>
+
+        <h3>Ports and local URLs</h3>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>URL</th><th>What</th></tr></thead>
+            <tbody>
+              <tr><td class="pick">localhost:3000</td><td>Web app — all four portals</td></tr>
+              <tr><td class="pick">localhost:3333/api/v1</td><td>REST API</td></tr>
+              <tr><td class="pick">localhost:3333/docs</td><td>OpenAPI / Swagger UI</td></tr>
+              <tr><td class="pick">localhost:8025</td><td>Mailpit — every email the system sends</td></tr>
+              <tr><td class="pick">localhost:9001</td><td>MinIO console — uploaded files and generated PDFs</td></tr>
+              <tr><td class="pick">localhost:5432</td><td>Postgres</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Environment variables</h3>
+<pre><code>DATABASE_URL=postgres://sms_app:dev@localhost:5432/sms
+DATABASE_MIGRATION_URL=postgres://sms_owner:dev@localhost:5432/sms
+REDIS_URL=redis://localhost:6379
+S3_ENDPOINT=http://localhost:9000   S3_BUCKET=sms-dev
+S3_ACCESS_KEY=minioadmin            S3_SECRET_KEY=minioadmin
+SMTP_URL=smtp://localhost:1025      <span class="c"># Mailpit</span>
+AUTH_SECRET=&lt;openssl rand -base64 32&gt;
+APP_URL=http://localhost:3000       API_URL=http://localhost:3333
+SMS_PROVIDER=console                <span class="c"># log to stdout in dev</span>
+PAYMENTS_PROVIDER=console</code></pre>
+
+        <h3>Windows notes</h3>
+        <ul>
+          <li>Keep the repo on the Windows filesystem and run Node on Windows — do not split it half in WSL. Docker Desktop's WSL2 backend handles the containers regardless.</li>
+          <li><code>git config --global core.autocrlf input</code> before cloning, so seeded CSV fixtures and snapshot tests don't churn on line endings.</li>
+          <li>Add the repo folder to Windows Defender exclusions — <code>node_modules</code> scanning roughly doubles install and build times.</li>
+        </ul>
+      </section>
+
+      <!-- ============ 10 ============ -->
+      <section id="not">
+        <h2><span class="num">10</span>What not to build in Phase 1</h2>
+        <p>Each of these is a product in its own right. Integrate, stub, or defer — and say so explicitly in the roadmap so it doesn't creep back in.</p>
+        <ul>
+          <li><strong>Automated timetable generation.</strong> Constraint optimisation. Manual scheduling with good conflict detection covers Phase 1; solve the solver later.</li>
+          <li><strong>A full LMS.</strong> Assignments, submissions and feedback only. Integrate Google Classroom and Teams.</li>
+          <li><strong>General-ledger accounting and payroll.</strong> Billing stays a subledger with a clean export.</li>
+          <li><strong>Delivery infrastructure.</strong> Email, SMS, WhatsApp, push and payments are provider adapters, never in-house.</li>
+          <li><strong>E-signature, proctoring, plagiarism, bus GPS, biometric hardware.</strong> Adapter interfaces at most.</li>
+          <li><strong>AI features.</strong> Every one of them depends on clean data that doesn't exist yet. The outbox stream is what makes them cheap in Phase 3 — and anything touching assessment, discipline, admissions or safeguarding needs a human in the loop by design, not by policy.</li>
+        </ul>
+
+        <p>The brief is right that the segment choice shapes the roadmap — that decision is closed in section&nbsp;12.</p>
+      </section>
+
+      <!-- ============ 11 ============ -->
+      <section id="execute">
+        <h2><span class="num">11</span>Executing the six</h2>
+        <p>The six calls in section 4 are only worth anything as mechanisms. Here is what each one actually becomes, when it lands, and the test that proves it still holds.</p>
+
+        <h3>1 — One person, one record <span class="chip p1" style="vertical-align:2px">M2</span></h3>
+        <p>The <code>person</code> table is the easy part. Three things hanging off it are what teams get wrong:</p>
+        <ul>
+          <li><strong>Account is not person.</strong> <code>identity.account</code> links many-to-one to <code>people.person</code>. A young student is a person with no account; a guardian is one account resolving to one person, whose <em>relationships</em> grant access to N students. That link is what delivers the single family login — not a bespoke parent-portal table.</li>
+          <li><strong>Merges leave tombstones.</strong> Never hard-delete the losing row. Keep it with <code>merged_into_id</code> and resolve old IDs in the repository layer, so existing URLs, exports and external integrations keep working after a merge.</li>
+          <li><strong>External IDs get their own table.</strong> <code>person_identifier(type, value)</code> — student number, national ID, previous-school ID. One overloaded column is what stops you onboarding a second country.</li>
+        </ul>
+        <p><em>Prove it:</em> put “the parent who also teaches and has two children enrolled” in the M2 seed. Any query that breaks on that fixture has regressed.</p>
+
+        <h3>2 — Effective dating, applied selectively <span class="chip p1" style="vertical-align:2px">M1 pattern</span></h3>
+        <p>Blanket effective-dating is expensive and over-applied. Sort every table into one of three buckets once, and record the bucket in the schema file:</p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Bucket</th><th>Shape</th><th>Examples</th></tr></thead>
+            <tbody>
+              <tr><td class="pick">Year-scoped</td><td>Belongs to exactly one year, frozen after close. <code>academic_year_id</code> + natural date.</td><td class="alt">Grades, attendance, enrolment records, invoices</td></tr>
+              <tr><td class="pick">Effective-dated</td><td><code>valid_from</code>/<code>valid_to</code>, with a Postgres 18 temporal <code>PRIMARY KEY … WITHOUT OVERLAPS</code>.</td><td class="alt">person_role, section_enrollment, staff_assignment, household_member, addresses, fee-plan assignments</td></tr>
+              <tr><td class="pick">Current-state</td><td>No dating; audit history covers change over time.</td><td class="alt">Config lookups, UI preferences, templates</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Skip full bitemporality — the audit log already gives you transaction time. The real enforcement mechanism is <strong>year close</strong>: <code>academic_year.status = open | locked | archived</code>, with locked years rejecting writes by trigger. That, not developer discipline, is what protects last year's report cards. Put <code>asOf(date)</code> in the shared db library; if anyone hand-writes the date predicate they will eventually forget it.</p>
+        <p><em>Prove it:</em> a “student changes section in March” fixture; assert the Term 1 report card is byte-identical before and after the move.</p>
+
+        <h3>3 — Ambient context <span class="chip p1" style="vertical-align:2px">M1</span></h3>
+        <p>The context belongs to the <strong>transaction</strong>, not the request. One helper — <code>withTenantTx()</code> — opens the transaction, issues the <code>SET LOCAL</code>, runs the callback. Then an ESLint rule banning raw <code>db.*</code> access outside it.</p>
+        <div class="note warn">
+          <div class="h">The bug that ends the company</div>
+          <p><code>SET LOCAL</code> is transaction-scoped and safe behind pgbouncer in transaction mode. Plain <code>SET</code> is session-scoped and will leak one tenant's context onto another tenant's request through a pooled connection. Lint for it.</p>
+        </div>
+        <p>Keep the three context values in their proper roles: <strong>tenant is security</strong> (RLS enforces it), <strong>campus is authorization</strong> (a CASL scope), <strong>year is a filter</strong>. Conflating them makes cross-campus reporting impossible later.</p>
+        <p><em>Prove it:</em> a <em>generated</em> negative suite that calls every repository method with tenant A's context asking for tenant B's IDs and asserts empty. Generated over the repository registry — hand-written coverage decays.</p>
+
+        <h3>4 — Custom fields <span class="chip p1" style="vertical-align:2px">M2 registry · M6 reporting</span></h3>
+        <p><code>field_definition(tenant_id, entity_type, key, data_type, options, validation, reportable)</code> compiles to a cached Zod schema per tenant and entity type, invalidated on definition change. Values live in <code>custom_fields jsonb</code> with a <code>jsonb_path_ops</code> GIN index. Two rules keep it from rotting:</p>
+        <ul>
+          <li>Don't chase fast ad-hoc JSONB reporting. Let a definition be flagged <code>reportable</code> and materialise only those into typed columns in the read model.</li>
+          <li><strong>A custom field may never be a foreign key or drive business logic.</strong> The moment a school wants a custom field other features must react to, it is a real field and needs a migration. Put that sentence in the contributing guide.</li>
+        </ul>
+
+        <h3>5 — Rules as configuration <span class="chip p1" style="vertical-align:2px">M1 pattern</span></h3>
+        <p>The whole trick is one line: facts point at the <strong>rule version</strong>, not the rule. <code>grade.grade_scale_version_id</code>. Versions are immutable; editing creates a new one. That is what makes a mid-year scale change safe.</p>
+        <p>The larger leverage is to implement rules as <strong>data interpreted by a small evaluator</strong> — a tiny JSON DSL of conditions and actions — never JavaScript stored in the database. One evaluator then serves grading rules, attendance rules, promotion criteria, the workflow engine's conditional fields and the Phase 2 automation engine. Teams routinely build three separate evaluators for these; it is pure waste. Golden-file tests per rule version.</p>
+
+        <h3>6 — Audit and reversibility <span class="chip p1" style="vertical-align:2px">M1</span></h3>
+        <p>Two distinct mechanisms — don't merge them:</p>
+        <ul>
+          <li><strong>Row history.</strong> One generic trigger function attached to every table by a migration helper, writing before/after JSONB plus <code>changed_by</code>, <code>tx_id</code>, <code>request_id</code>, <code>bulk_operation_id</code>. Partition by month from day one — it becomes your largest table by an order of magnitude. Per-table column exclusion lists so tokens and counselling-note bodies never land in history.</li>
+          <li><strong>Access log.</strong> Who <em>read</em> medical, counselling or safeguarding data. Triggers cannot see reads, so this is emitted app-side from the serialisation interceptor whenever a response includes a restricted field.</li>
+        </ul>
+        <p>Undo works because <code>bulk_operation</code> groups changes through a session GUC the trigger reads. Reversal replays before-images backwards in one transaction and records itself as a new bulk operation. Offer undo only when no later change has touched those rows — checkable straight from the history sequence.</p>
+
+        <h3>What makes all six stick</h3>
+        <p>Five CI checks, written in M1, that query the database's own catalogs. Without these the six are a document nobody re-reads.</p>
+        <ol>
+          <li>Every tenant-scoped table has <code>tenant_id</code> <em>and</em> a policy — diff <code>pg_policies</code> against <code>information_schema.tables</code>.</li>
+          <li>Every table has the audit trigger attached — assert from <code>pg_trigger</code>.</li>
+          <li>No table is owned by the app role, and the app role lacks <code>BYPASSRLS</code>.</li>
+          <li>The generated cross-tenant negative suite passes.</li>
+          <li>Nx module-boundary lint passes.</li>
+        </ol>
+      </section>
+
+      <!-- ============ 12 ============ -->
+      <section id="closed">
+        <h2><span class="num">12</span>Decisions, closed</h2>
+
+        <h3>Segment: private and international schools as one beachhead</h3>
+        <p>Take private and international together and defer public districts. The two share everything that actually closes a sale — admissions, tuition and payment plans, family experience, multiple languages, multi-campus — so one roadmap serves both.</p>
+        <p>Districts are a different business, not a bigger one. Certified compliance reporting and Ed-Fi/OneRoster are table stakes <em>before</em> the first sale, on a 12–18 month cycle: a large fixed cost paid entirely ahead of revenue, and it would reshape M7–M8 around reporting packs instead of billing and family experience. Reverse this only if most of the schools you can already reach are public — in which case swap M7 and M8 and add a compliance module.</p>
+
+        <h3>Remaining stack alternatives</h3>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Question</th><th>Decision</th><th>Reasoning</th></tr></thead>
+            <tbody>
+              <tr><td>ORM</td><td class="pick">Drizzle</td><td>You need <code>SET LOCAL</code> control per transaction and readable reporting SQL. Prisma fights both.</td></tr>
+              <tr><td>Identity</td><td class="pick">Better Auth</td><td>Behind an internal <code>IdentityProvider</code> port, so a future tender demanding an on-prem IdP is a module swap rather than a rewrite.</td></tr>
+              <tr><td>Queue</td><td class="pick">BullMQ</td><td>You want Redis anyway for the ability cache and rate limiting, and report-card generation for 1,200 students is a job flow with dependencies.</td></tr>
+              <tr><td>Portals</td><td class="pick">One Next app</td><td>Route groups over one session. Split out only the public applicant portal, and only when it needs its own caching and WAF posture.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Genuinely still open — and should stay open</h3>
+        <ul>
+          <li><strong>Automated timetabling.</strong> Needs real constraint data from real schools before the problem is even specified correctly.</li>
+          <li><strong>OneRoster vs Ed-Fi.</strong> Follows from the segment decision; revisit if the district market opens up.</li>
+          <li><strong>Payment gateway.</strong> Follows geography. Keep the adapter, defer the provider.</li>
+        </ul>
+      </section>
+
+      <div class="footer">
+        <p>Versions verified against the npm registry and upstream release notes on 8 August 2026. Scope drawn from the Phase 1 sections of <em>School Management System: Market Research and Feature Roadmap</em>.</p>
+      </div>
+
+    </article>
+  </div>
+</div>
+</body>
+</html>

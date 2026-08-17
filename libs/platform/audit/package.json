@@ -1,0 +1,39 @@
+{
+  "name": "@sms/audit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Row history, read-access logging and reversible bulk operations - wraps the audit.* schema (see migrations/0100_audit.sql).",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "nx": {
+    "tags": [
+      "type:platform"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.28",
+    "@sms/db": "workspace:*",
+    "@sms/kernel": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "@nestjs/core": "^11.1.28",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "^12.1.0",
+    "postgres": "^3.4.9",
+    "testcontainers": "^12.1.0"
+  }
+}

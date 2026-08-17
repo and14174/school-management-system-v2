@@ -1,0 +1,54 @@
+{
+  "name": "@sms/communications",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Communications: announcements with a frozen recipient list, threaded messaging always anchored to a subject, per-participant read state, and the communications.announcement_published / communications.message_posted domain events.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "nx": {
+    "tags": [
+      "type:domain"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "seed": "tsx --tsconfig ../../../tsconfig.base.json src/seed.ts"
+  },
+  "dependencies": {
+    "@sms/kernel": "workspace:*",
+    "@sms/db": "workspace:*",
+    "@sms/tenancy": "workspace:*",
+    "@sms/access": "workspace:*",
+    "@sms/audit": "workspace:*",
+    "@sms/outbox": "workspace:*",
+    "@sms/people": "workspace:*",
+    "@sms/academic": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "reflect-metadata": "^0.2.2",
+    "zod": "^4.4.3",
+    "@nestjs/common": "^11.1.28",
+    "@nestjs/core": "^11.1.28",
+    "rxjs": "^7.8.2"
+  },
+  "peerDependencies": {
+    "@nestjs/swagger": "^11.4.6",
+    "nestjs-zod": "^5.5.0"
+  },
+  "devDependencies": {
+    "@nestjs/swagger": "^11.4.6",
+    "@nestjs/testing": "^11.1.28",
+    "@testcontainers/postgresql": "^12.1.0",
+    "nestjs-zod": "^5.5.0",
+    "testcontainers": "^12.1.0",
+    "tsx": "^4.23.11"
+  }
+}

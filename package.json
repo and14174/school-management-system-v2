@@ -1,0 +1,52 @@
+{
+  "name": "sms",
+  "version": "0.0.0",
+  "private": true,
+  "description": "School Management System - multi-tenant SIS platform (Phase 1)",
+  "packageManager": "pnpm@11.20.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.yml down",
+    "infra:reset": "docker compose -f infra/docker-compose.yml down -v",
+    "dev": "nx run-many -t dev --projects=@sms/api,@sms/web --output-style=stream",
+    "dev:api": "pnpm --filter @sms/api dev",
+    "dev:web": "pnpm --filter @sms/web dev",
+    "dev:worker": "pnpm --filter @sms/worker dev",
+    "build": "nx run-many -t build",
+    "lint": "nx run-many -t lint",
+    "typecheck": "nx run-many -t typecheck",
+    "test": "nx run-many -t test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,json,md,css,yaml,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,json,md,css,yaml,yml}\"",
+    "db:generate": "pnpm --filter @sms/api db:generate",
+    "db:migrate": "pnpm --filter @sms/api db:migrate",
+    "db:studio": "pnpm --filter @sms/api db:studio",
+    "db:seed": "pnpm --filter @sms/api db:seed",
+    "check:db": "tsx libs/shared/db/src/arch-check.ts",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm check:db"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@nx/eslint-plugin": "^23.1.1",
+    "@playwright/test": "^1.62.1",
+    "@testcontainers/postgresql": "^12.1.0",
+    "@types/node": "^26.1.2",
+    "@vitejs/plugin-react": "^6.0.5",
+    "@vitest/coverage-v8": "^4.1.10",
+    "dotenv-cli": "^11.0.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^10.8.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "jiti": "^2.7.0",
+    "nx": "^23.1.1",
+    "prettier": "^3.9.6",
+    "testcontainers": "^12.1.0",
+    "tsx": "^4.23.11",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.66.0",
+    "vitest": "^4.1.10"
+  }
+}

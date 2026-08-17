@@ -1,0 +1,46 @@
+{
+  "name": "@sms/outbox",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Transactional outbox: domain events written in the same transaction as the fact they describe, drained by a dispatcher. See the 0850 migration header.",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "nx": {
+    "tags": [
+      "type:platform"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@sms/kernel": "workspace:*",
+    "@sms/db": "workspace:*",
+    "drizzle-orm": "^0.45.2",
+    "reflect-metadata": "^0.2.2",
+    "zod": "^4.4.3",
+    "@nestjs/common": "^11.1.28",
+    "@nestjs/core": "^11.1.28",
+    "rxjs": "^7.8.2"
+  },
+  "peerDependencies": {
+    "@nestjs/swagger": "^11.4.6",
+    "nestjs-zod": "^5.5.0"
+  },
+  "devDependencies": {
+    "@nestjs/swagger": "^11.4.6",
+    "@testcontainers/postgresql": "^12.1.0",
+    "nestjs-zod": "^5.5.0",
+    "testcontainers": "^12.1.0",
+    "tsx": "^4.23.11"
+  }
+}

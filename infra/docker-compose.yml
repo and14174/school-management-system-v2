@@ -1,0 +1,91 @@
+name: sms
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sms_owner
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: sms
+    ports:
+      - '5432:5432'
+    volumes:
+      # Postgres 18+ images expect a single mount at /var/lib/postgresql and place
+      # the cluster in a major-version subdirectory, so pg_upgrade --link works
+      # without crossing a mount boundary. Mounting .../data directly fails to boot.
+      - db-data:/var/lib/postgresql
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sms_owner -d sms']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: ['server', '/data', '--console-address', ':9001']
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: creates the bucket the documents module writes generated PDFs to.
+  #
+  # `infra:reset` destroys MinIO's volume along with everything else, and nothing
+  # else creates the bucket - so a fresh stack failed every document write with
+  # NoSuchBucket, and the documents test suite went from green to five failures
+  # purely because the environment had been rebuilt. `pnpm infra:up` should hand
+  # you a stack that works.
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minioadmin minioadmin &&
+      mc mb --ignore-existing local/sms-dev &&
+      echo 'bucket sms-dev ready'
+      "
+    restart: 'no'
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # web UI
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+volumes:
+  db-data:
+  redis-data:
+  minio-data:

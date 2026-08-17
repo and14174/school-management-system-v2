@@ -1,0 +1,35 @@
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# Nx
+.nx/cache
+.nx/workspace-data
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test and coverage
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local generated artefacts
+*.log
+tmp/
