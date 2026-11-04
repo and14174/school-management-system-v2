@@ -100,6 +100,10 @@ pnpm infra:down      # stop them
 pnpm infra:reset     # stop and destroy volumes (wipes local data)
 ```
 
+## Deployment
+
+The web app runs on Vercel and the API, Postgres 18, and Redis run on Railway. The web app proxies `/api/v1`, so sign-in cookies stay first-party. Step-by-step setup and every environment variable: [docs/deployment.md](docs/deployment.md).
+
 ## Windows notes
 
 - Keep the repo on the Windows filesystem; don't split it half into WSL.

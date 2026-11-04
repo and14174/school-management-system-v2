@@ -26,6 +26,7 @@
     "@sms/kernel": "workspace:*",
     "@sms/db": "workspace:*",
     "@sms/audit": "workspace:*",
+    "@sms/access": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "reflect-metadata": "^0.2.2",
     "zod": "^4.4.3",

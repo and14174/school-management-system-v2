@@ -7,7 +7,11 @@ import { API_URL, ApiUnreachableError } from './api';
  * is required on every request so the session cookie travels cross-origin
  * between the web app (port 3000 in dev) and the API (port 3333).
  */
-export const AUTH_BASE_URL = `${API_URL}/api/v1/auth`;
+// Better Auth's client rejects a relative baseURL, so behind the same-origin
+// proxy (API_URL is '') it uses the page's own origin. The server-render
+// placeholder is never requested - auth calls only happen in the browser.
+const authOrigin = API_URL || (typeof window === 'undefined' ? 'http://localhost' : window.location.origin);
+export const AUTH_BASE_URL = `${authOrigin}/api/v1/auth`;
 
 export const authClient = createAuthClient({
   baseURL: AUTH_BASE_URL,

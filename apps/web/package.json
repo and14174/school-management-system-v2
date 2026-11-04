@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "description": "Next.js front end - admin, teacher, parent, student and applicant portals",
+  "engines": {
+    "node": "24.x"
+  },
   "nx": {
     "tags": [
       "type:app"

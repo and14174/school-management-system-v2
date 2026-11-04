@@ -1,5 +1,7 @@
 import { ForbiddenError, UnauthorizedError } from './http';
 
+// Empty when deployed: next.config.ts proxies /api/v1 on the web origin, so
+// requests are same-origin. `??` (not `||`) keeps that empty string.
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333';
 
 /**

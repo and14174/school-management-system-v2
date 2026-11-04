@@ -12,6 +12,7 @@
     "dev": "tsx watch --tsconfig ../../tsconfig.base.json src/main.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/main.js",
+    "start:prod": "tsx --tsconfig ../../tsconfig.base.json src/main.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",

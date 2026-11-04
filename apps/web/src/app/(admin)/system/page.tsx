@@ -68,7 +68,7 @@ export default function SystemPage() {
             <EmptyState
               icon={<WifiOff className="size-5" />}
               title="The API is unreachable"
-              description={`We couldn't reach ${API_URL}. It may not be running yet, or it's temporarily unavailable. This page will keep working once the API comes back.`}
+              description={`We couldn't reach ${API_URL || 'the API'}. It may not be running yet, or it's temporarily unavailable. This page will keep working once the API comes back.`}
               action={
                 <Button onClick={() => refetch()} disabled={isFetching}>
                   <RefreshCw className={isFetching ? 'animate-spin motion-reduce:animate-none' : ''} />
